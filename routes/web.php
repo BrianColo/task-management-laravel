@@ -18,3 +18,6 @@ Route::get('/', function () {
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
+Route::get('/proyectos', 'ProjectController@index')->name('index_proyect');
+Route::resource('projects', 'ProjectController', ['only' => ['index', 'create', 'store','update','delete']]);
+Route::resource('tasks', 'TaskController', ['only' => ['index', 'create', 'store','update','delete']]);
