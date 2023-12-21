@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 use Carbon\Carbon;
 use Styde\Html\Facades\Alert;
 use Illuminate\Http\Request;
-use App\Entities\Project;
+use App\Project;
 
 class ProjectController extends Controller
 {
@@ -20,34 +20,50 @@ class ProjectController extends Controller
     }
 
     public function index() {
-        $dataProyect = Project::findAll();
+        $dataProyect = Project::all();
         return view('index_proyect', compact('dataProyect'));
     }
 
-    public function create() {
+    public function edit($id) {
+        $dataProyect = Project::find($id);
+        $propCheckEnable = $dataProyect->status_id ? 'checked' : '';
+        $propCheckDisable = $propCheckEnable === 'checked' ? '' : 'checked';
+        return view('edit_proyect', compact('dataProyect','propCheckEnable','propCheckDisable'));
+    }
 
-        return view('admin.projects.create', compact('tipo_tiempos', 'transportadoras', 'mensajeros', 'tipoManifiesto', 'ciudades', 'tipoMensajero', 'zonas', 'sucursales', 'couriers', 'clientes', 'departamentos','sucursalesOrigen'));
+    public function create() {
+        return view('create_proyect');
     }
 
     public function update (Request $request, $id ) {
         $project = Project::findOrFail($id);
+
+        $project->name = 'textUpdate';
+        $project->description = 'DescUpdate';
+        $project->status_id = 1;
+        $project->date_init = '2023-12-31';
+
+        $project->save();
         
-        Alert::message("Manifiesto " . $project->id . " actualizado con exito! =>".$project->fechaDespachoActual, 'success');
-        return redirect()->route('admin.projects.index');
+        Alert::message("Proyecto " . $project->id . " actualizado con exito! ", 'success');
+        return redirect()->route('index_proyect');
     }
 
     public function store(Request $request) {
         $project = new Project;        
         $project->save();
 
-        Alert::message("Proyecto " . $project->id . " registrado con exito! ", 'success');
+        Alert::message("Proyecto " . $project->id . " Registrado con exito! ", 'success');
 
-        return redirect()->route('admin.projects.index', compact('id'));
+        return redirect()->route('index_proyect');
     }
 
     public function delete() {
         $project = new Project;
         $project->delete();
-        return view('admin.projects.create', compact('tipo_tiempos', 'transportadoras', 'mensajeros', 'tipoManifiesto', 'ciudades', 'tipoMensajero', 'zonas', 'sucursales', 'couriers', 'clientes', 'departamentos','sucursalesOrigen'));
+
+        Alert::message("Proyecto " . $project->id . " Eliminado con exito! ", 'success');
+
+        return redirect()->route('index_proyect');
     }
 }
